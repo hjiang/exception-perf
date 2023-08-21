@@ -7,7 +7,9 @@
 #include <string>
 #include <utility>
 
-auto to_int_except(const std::string& s) { return std::stoi(s); }
+auto to_int_except(const std::string& s) noexcept(false) {
+  return std::stoi(s);
+}
 
 auto to_int_noexcept(const std::string& s) noexcept {
   int result;
