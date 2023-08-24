@@ -7,8 +7,18 @@
 #include <string>
 #include <utility>
 
-auto to_int_except(const std::string& s) noexcept(false) {
+auto to_int_except1(const std::string& s) noexcept(false) {
   return std::stoi(s);
+}
+
+auto to_int_except2(const std::string& s) noexcept(false) {
+  int result;
+  auto [_, ec] = std::from_chars(s.data(), s.data() + s.size(), result);
+  if (ec != std::errc()) {
+    throw std::invalid_argument("invalid argument");
+  } else {
+    return result;
+  }
 }
 
 auto to_int_noexcept(const std::string& s) noexcept {
@@ -30,52 +40,79 @@ int main() {
       bad_nums[i].push_back(alpha[std::rand() % (sizeof(alpha) - 1)]);
     }
   }
-
-  auto t1 = std::chrono::high_resolution_clock::now();
+  auto t1 = std::chrono::steady_clock::now();
   for (size_t i = 0; i < num_runs; ++i) {
     auto _ = to_int_noexcept(good_nums[i]);
   }
-  auto t2 = std::chrono::high_resolution_clock::now();
+  auto t2 = std::chrono::steady_clock::now();
   std::cout
-      << "good_nums(no exception): "
+      << "good_nums(to_int_noexcept): "
       << std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count()
       << std::endl;
 
-  t1 = std::chrono::high_resolution_clock::now();
+  t1 = std::chrono::steady_clock::now();
   for (size_t i = 0; i < num_runs; ++i) {
     auto _ = to_int_noexcept(bad_nums[i]);
   }
-  t2 = std::chrono::high_resolution_clock::now();
+  t2 = std::chrono::steady_clock::now();
   std::cout
-      << "bad_nums(no exception): "
+      << "bad_nums(to_int_noexcept): "
       << std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count()
       << std::endl;
 
-  t1 = std::chrono::high_resolution_clock::now();
+  t1 = std::chrono::steady_clock::now();
   for (size_t i = 0; i < num_runs; ++i) {
     try {
-      auto _ = to_int_except(good_nums[i]);
+      auto _ = to_int_except1(good_nums[i]);
     } catch (const std::invalid_argument& e) {
       // ignore
     }
   }
-  t2 = std::chrono::high_resolution_clock::now();
+  t2 = std::chrono::steady_clock::now();
   std::cout
-      << "good_nums(exception): "
+      << "good_nums(to_int_except1): "
       << std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count()
       << std::endl;
 
-  t1 = std::chrono::high_resolution_clock::now();
+  t1 = std::chrono::steady_clock::now();
   for (size_t i = 0; i < num_runs; ++i) {
     try {
-      auto _ = to_int_except(bad_nums[i]);
+      auto _ = to_int_except1(bad_nums[i]);
     } catch (const std::invalid_argument& e) {
       // ignore
     }
   }
-  t2 = std::chrono::high_resolution_clock::now();
+  t2 = std::chrono::steady_clock::now();
   std::cout
-      << "bad_nums(exception): "
+      << "bad_nums(to_int_except1): "
+      << std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count()
+      << std::endl;
+
+  t1 = std::chrono::steady_clock::now();
+  for (size_t i = 0; i < num_runs; ++i) {
+    try {
+      auto _ = to_int_except2(good_nums[i]);
+    } catch (const std::invalid_argument& e) {
+      // ignore
+    }
+  }
+  t2 = std::chrono::steady_clock::now();
+  std::cout
+      << "good_nums(to_int_except2): "
+      << std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count()
+      << std::endl;
+
+  t1 = std::chrono::steady_clock::now();
+  for (size_t i = 0; i < num_runs; ++i) {
+    try {
+      auto _ = to_int_except2(bad_nums[i]);
+    } catch (const std::invalid_argument& e) {
+      // ignore
+    }
+  }
+  t2 = std::chrono::steady_clock::now();
+  std::cout
+      << "bad_nums(to_int_except2): "
       << std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count()
       << std::endl;
 
