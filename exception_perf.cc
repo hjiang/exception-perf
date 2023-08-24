@@ -26,8 +26,8 @@ int main() {
   std::array<std::string, num_runs> good_nums, bad_nums;
   for (size_t i = 0; i < num_runs; ++i) {
     for (size_t j = 0; j < digits; ++j) {
-      good_nums[i].push_back(num[std::rand() % sizeof(num) - 1]);
-      bad_nums[i].push_back(alpha[std::rand() % sizeof(alpha) - 1]);
+      good_nums[i].push_back(num[std::rand() % (sizeof(num) - 1)]);
+      bad_nums[i].push_back(alpha[std::rand() % (sizeof(alpha) - 1)]);
     }
   }
 
